@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celular</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="phone">
+        <!-- Tela de bloqueio -->
+        <div id="lock-screen" class="screen active">
+            <div class="time" id="lock-time"></div>
+            <div class="date">Qui, 3 de Outubro</div>
+            <p>Deslize para desbloquear</p>
+        </div>
+
+        <!-- Tela inicial -->
+        <div id="home-screen" class="screen">
+            <div class="status-bar">
+                <span>LTE</span>
+                <span id="battery-percentage">100%</span>
+                <span id="current-time"></span>
+            </div>
+            <div class="app-grid">
+                <div class="app-icon nubank" data-app="bank">🏦<br>Nubank</div>
+                <div class="app-icon calculator" data-app="calculator">🧮<br>Calculadora</div>
+                <div class="app-icon settings" data-app="settings">⚙️<br>Configurações</div>
+                <div class="app-icon profile" data-app="profile">👤<br>Perfil</div>
+            </div>
+        </div>
+
+        <!-- App do Banco -->
+        <div id="bank-app" class="app-screen">
+            <h2>Nubank</h2>
+            <div class="bank-container">
+                <h3>Saldo: R$<span id="balance">1000</span></h3>
+                <h3>Transferências Realizadas</h3>
+                <ul id="transfer-history"></ul>
+                <h3>Fazer Transferência</h3>
+                <input type="text" id="cpf-input" placeholder="CPF do destinatário" />
+                <input type="number" id="amount-input" placeholder="Valor" />
+                <button id="transfer-button">Transferir</button>
+            </div>
+        </div>
+
+        <!-- App da Calculadora -->
+        <div id="calculator-app" class="app-screen">
+            <h2>Calculadora</h2>
+            <input type="text" id="calculator-display" disabled />
+            <div class="calculator-buttons">
+                <button onclick="handleCalculatorInput('1')">1</button>
+                <button onclick="handleCalculatorInput('2')">2</button>
+                <button onclick="handleCalculatorInput('3')">3</button>
+                <button onclick="handleCalculatorInput('+')">+</button>
+                <button onclick="handleCalculatorInput('4')">4</button>
+                <button onclick="handleCalculatorInput('5')">5</button>
+                <button onclick="handleCalculatorInput('6')">6</button>
+                <button onclick="handleCalculatorInput('-')">-</button>
+                <button onclick="handleCalculatorInput('7')">7</button>
+                <button onclick="handleCalculatorInput('8')">8</button>
+                <button onclick="handleCalculatorInput('9')">9</button>
+                <button onclick="handleCalculatorInput('*')">×</button>
+                <button onclick="handleCalculatorInput('0')">0</button>
+                <button onclick="handleCalculatorInput('=')">=</button>
+                <button onclick="handleCalculatorInput('C')">C</button>
+            </div>
+        </div>
+
+        <div id="settings-app" class="app-screen">
+            <h2>Configurações</h2>
+            <p>Personalize seu dispositivo aqui.</p>
+        </div>
+
+        <div id="profile-app" class="app-screen">
+            <h2>Perfil</h2>
+            <p>Informações do usuário.</p>
+        </div>
+
+        <!-- Botão Home -->
+        <div class="nav-buttons">
+            <div class="home-button"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

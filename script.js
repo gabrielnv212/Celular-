@@ -27,7 +27,7 @@ function adicionarItem() {
     li.innerHTML = ` 
         <span><strong>${texto}${detalhes}</strong></span>
         <button class="btn" onclick="mostrarComentario(this)">💬 Comentar</button>
-        <input type="text" class="comentario" placeholder="Minuto pausado..." oninput="salvarProgresso(this)">
+        <input type="text" class="comentario" placeholder="Minuto pausado..." style="display: none;" oninput="salvarProgresso(this)">
         <button class="btn" onclick="marcarConcluido(this)">✅</button>
         <button class="btn" onclick="removerItem(this)">🗑️</button>
     `;
@@ -40,8 +40,9 @@ function adicionarItem() {
 }
 
 function mostrarComentario(botao) {
+    // Alternar a visibilidade do campo de comentário
     const inputComentario = botao.parentElement.querySelector(".comentario");
-    inputComentario.style.display = inputComentario.style.display === "none" || inputComentario.style.display === "" ? "block" : "none";
+    inputComentario.style.display = inputComentario.style.display === "none" ? "block" : "none";
 }
 
 function marcarConcluido(botao) {
@@ -82,7 +83,7 @@ function carregarItens() {
         li.innerHTML = ` 
             <span><strong>${item.texto}</strong></span>
             <button class="btn" onclick="mostrarComentario(this)">💬 Comentar</button>
-            <input type="text" class="comentario" value="${item.comentario}" oninput="salvarProgresso(this)">
+            <input type="text" class="comentario" value="${item.comentario}" style="display: none;" oninput="salvarProgresso(this)">
             <button class="btn" onclick="marcarConcluido(this)">✅</button>
             <button class="btn" onclick="removerItem(this)">🗑️</button>
         `;

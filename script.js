@@ -1,94 +1,91 @@
-const lockScreen = document.getElementById('lock-screen');
-const homeScreen = document.getElementById('home-screen');
-const homeButton = document.querySelector('.home-button');
-const appScreens = document.querySelectorAll('.app-screen');
-const balanceDisplay = document.getElementById('balance');
-const transferHistory = document.getElementById('transfer-history');
-const batteryPercentageDisplay = document.getElementById('battery-percentage');
-const currentTimeDisplay = document.getElementById('current-time');
-const lockTimeDisplay = document.getElementById('lock-time');
+document.addEventListener("DOMContentLoaded", function() {
+    // Carregar os itens salvos no localStorage ao carregar a página
+    carregarItens();
 
-let balance = 1000;
-let batteryPercentage = 100;
-
-// Função para atualizar o horário em tempo real
-function updateTime() {
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const currentTime = `${hours}:${minutes}`;
-    
-    currentTimeDisplay.textContent = currentTime;
-    lockTimeDisplay.textContent = currentTime;
-}
-
-// Função para atualizar a bateria
-function updateBattery() {
-    if (batteryPercentage > 0) {
-        batteryPercentage -= 1;
-        batteryPercentageDisplay.textContent = `${batteryPercentage}%`;
-    }
-}
-
-// Ação ao clicar na tela de bloqueio
-lockScreen.addEventListener('click', () => {
-    lockScreen.classList.remove('active');
-    homeScreen.classList.add('active');
-    homeButton.style.display = 'block';
-});
-
-// Ação ao clicar nos ícones dos aplicativos
-document.querySelectorAll('.app-icon').forEach(icon => {
-    icon.addEventListener('click', () => {
-        const appId = icon.getAttribute('data-app') + '-app';
-        openApp(appId);
+    document.getElementById("tipoItem").addEventListener("change", function() {
+        const isSerie = this.value === "serie";
+        document.getElementById("temporada").style.display = isSerie ? "block" : "none";
+        document.getElementById("episodio").style.display = isSerie ? "block" : "none";
     });
 });
 
-// Função para abrir aplicativos
-function openApp(appId) {
-    homeScreen.classList.remove('active');
-    document.getElementById(appId).classList.add('active');
+function adicionarItem() {
+    const tipo = document.getElementById("tipoItem").value;
+    const input = document.getElementById("novoItem");
+    const texto = input.value.trim();
+    if (texto === "") return;
+
+    let detalhes = "";
+    if (tipo === "serie") {
+        const temporada = document.getElementById("temporada").value;
+        const episodio = document.getElementById("episodio").value;
+        detalhes = ` (T${temporada}E${episodio})`;
+    }
+
+    const lista = document.getElementById("lista");
+    const li = document.createElement("li");
+    li.innerHTML = ` 
+        <span><strong>${texto}${detalhes}</strong></span>
+        <button class="btn" onclick="mostrarComentario(this)">💬 Comentar</button>
+        <input type="text" class="comentario" placeholder="Minuto pausado..." oninput="salvarProgresso(this)">
+        <button class="btn" onclick="marcarConcluido(this)">✅</button>
+        <button class="btn" onclick="removerItem(this)">🗑️</button>
+    `;
+    lista.appendChild(li);
+    input.value = "";
+    document.getElementById("temporada").value = "";
+    document.getElementById("episodio").value = "";
+
+    salvarItens();
 }
 
-// Ação ao clicar no botão Home
-homeButton.addEventListener('click', () => {
-    appScreens.forEach(screen => screen.classList.remove('active'));
-    homeScreen.classList.add('active');
-});
-
-// Ação ao clicar no botão de transferir
-document.getElementById('transfer-button').addEventListener('click', () => {
-    const cpf = document.getElementById('cpf-input').value;
-    const amount = parseFloat(document.getElementById('amount-input').value);
-
-    if (amount > 0 && amount <= balance) {
-        balance -= amount;
-        balanceDisplay.textContent = balance;
-        const listItem = document.createElement('li');
-        listItem.textContent = `CPF: ${cpf}, Valor: R$${amount}`;
-        transferHistory.appendChild(listItem);
-    } else {
-        alert('Saldo insuficiente ou valor inválido.');
-    }
-});
-
-// Função para manipular a entrada da calculadora
-let displayValue = '';
-
-function handleCalculatorInput(input) {
-    if (input === 'C') {
-        displayValue = '';
-    } else if (input === '=') {
-        displayValue = eval(displayValue).toString();
-    } else {
-        displayValue += input;
-    }
-    document.getElementById('calculator-display').value = displayValue;
+function mostrarComentario(botao) {
+    const inputComentario = botao.parentElement.querySelector(".comentario");
+    inputComentario.style.display = inputComentario.style.display === "none" || inputComentario.style.display === "" ? "block" : "none";
 }
 
-// Atualizar o tempo a cada segundo
-setInterval(updateTime, 1000);
+function marcarConcluido(botao) {
+    const item = botao.parentElement;
+    item.classList.toggle("completed");
+    salvarItens();
+}
 
-// Atualizar a bateria a cada 3 segundos
-setInterval(updateBattery, 3000);
+function removerItem(botao) {
+    const item = botao.parentElement;
+    item.remove();
+    salvarItens();
+}
+
+function salvarProgresso(input) {
+    const itemText = input.previousElementSibling.previousElementSibling.textContent.trim();
+    localStorage.setItem(itemText, input.value);
+}
+
+function salvarItens() {
+    const lista = document.getElementById("lista");
+    const itens = [];
+    lista.querySelectorAll("li").forEach(item => {
+        const texto = item.querySelector("strong").textContent;
+        const comentario = item.querySelector(".comentario").value;
+        const concluido = item.classList.contains("completed");
+        itens.push({ texto, comentario, concluido });
+    });
+    localStorage.setItem("itens", JSON.stringify(itens));
+}
+
+function carregarItens() {
+    const itensSalvos = JSON.parse(localStorage.getItem("itens")) || [];
+    const lista = document.getElementById("lista");
+    itensSalvos.forEach(item => {
+        const li = document.createElement("li");
+        li.classList.toggle("completed", item.concluido);
+        li.innerHTML = ` 
+            <span><strong>${item.texto}</strong></span>
+            <button class="btn" onclick="mostrarComentario(this)">💬 Comentar</button>
+            <input type="text" class="comentario" value="${item.comentario}" oninput="salvarProgresso(this)">
+            <button class="btn" onclick="marcarConcluido(this)">✅</button>
+            <button class="btn" onclick="removerItem(this)">🗑️</button>
+        `;
+        lista.appendChild(li);
+    });
+}
